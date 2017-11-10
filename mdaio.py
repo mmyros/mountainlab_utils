@@ -501,12 +501,9 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
     is_kwd=fname_kwd[-3:]=='kwd'
     if is_kwd:
         data=load_kwd_without_loading(fname_kwd)
-        print 'Found data with shape '+str(data['data'].shape)
+        print('Found data with shape '+str(data['data'].shape))
         # here we can restrict the size of the data for processing to just a  part (chunk)
-        X=data['data'][int(1e7):data['data'.shape[0],:]
-        #print('Found open ephys data with shape '+str(X.shape))
-    
-    
+        X=data['data'][int(1e7):data['data'.shape[0],:]        #print('Found open ephys data with shape '+str(X.shape))    
         if len(channels)<1:
             channels = range(X.shape[1]) #TODO maybe as input for reshuffling
         
