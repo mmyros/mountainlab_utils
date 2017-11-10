@@ -4,6 +4,7 @@ export PATH="~/anaconda2/bin:$PATH"
 #export PATH=/home/m/git/mountainlab/bin:$PATH
 #name=149063045915
 name=$1
+which python
 echo   "Processing file " $name
 ############## Script starts #########################################
 ### Convert kwd to mda, subtract reference: ###
@@ -15,7 +16,7 @@ python2.7 ~/max/git/mountainlab_utils/mdaio.py '/home/m/max/data/oe/maze/hp14/'$
 
 ### Use Mountainsort ###
 echo 'ds'$3' '$name>>~/max/res/msort/datasets.txt
-mkdir ~/max/res/oe/msort/$name
+mkdir ~/max/res/msort/$name
 prv-create ~/max/BIGFILES/$name.mda ~/max/res/msort/$name/raw.mda.prv
 # geom: TODO generalize type of geom
 cp ~/max/git/mountainlab_utils/geom_tetr8.csv ~/max/res/msort/$name/geom.csv
