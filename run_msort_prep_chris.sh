@@ -18,5 +18,5 @@ echo 'ds'$3' '$name>>~/max/res/msort/datasets.txt
 mkdir ~/max/res/oe/msort/$name
 prv-create ~/max/BIGFILES/$name.mda ~/max/res/msort/$name/raw.mda.prv
 # geom: TODO generalize type of geom
-cp ~/Dropbox/spikesort/mlab/geom_tetr8.csv /home/m/ssd/res/oe/msort/$name/geom.csv
-echo '{"samplerate":30000}'>/home/m/ssd/res/oe/msort/$name/params.json
+cp ~/Dropbox/spikesort/mlab/geom_tetr8.csv ~/max/res/msort/$name/geom.csv
+echo '{"samplerate":30000}'>~/max/res/msort/$name/params.json
