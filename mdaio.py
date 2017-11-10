@@ -280,8 +280,9 @@ def strictly_increasing(L):
     return all(x<y for x, y in zip(L, L[1:])) 
 def load_kwd_without_loading(filename, dataset=0):
     # Try to fill in any wildcards in the filename:
-    filename = glob.glob(filename)
-    assert len(filename)>0, 'Did not file this file: ' +filename
+    fname = glob.glob(filename)
+    assert len(fname)>0, 'Did not find this file: ' +fname
+    filename=fname
     f = h5py.File(filename[0], "r")
     assert f.attrs["kwik_version"] == 2
     data = {}
