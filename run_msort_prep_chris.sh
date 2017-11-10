@@ -1,7 +1,7 @@
 # 1st input: file ID to convert and add to datasets.txt
 # 2nd input: clear datasets.txt? 1 for yes
-export PATH="/home/m/anaconda2/bin:$PATH"
-export PATH=/home/m/git/mountainlab/bin:$PATH
+export PATH="~/anaconda2/bin:$PATH"
+#export PATH=/home/m/git/mountainlab/bin:$PATH
 #name=149063045915
 name=$1
 echo   "Processing file " $name
@@ -18,5 +18,5 @@ echo 'ds'$3' '$name>>~/max/res/msort/datasets.txt
 mkdir ~/max/res/oe/msort/$name
 prv-create ~/max/BIGFILES/$name.mda ~/max/res/msort/$name/raw.mda.prv
 # geom: TODO generalize type of geom
-cp ~/Dropbox/spikesort/mlab/geom_tetr8.csv ~/max/res/msort/$name/geom.csv
+cp ~/max/git/mountainlab_utils/geom_tetr8.csv ~/max/res/msort/$name/geom.csv
 echo '{"samplerate":30000}'>~/max/res/msort/$name/params.json
