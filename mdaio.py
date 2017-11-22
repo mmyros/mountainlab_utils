@@ -495,6 +495,7 @@ def readHeader(f):
     return header
 def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
             sampling_rate=30000,nshanks  = 4,dead_chans=[]):
+    print(do_median_ref)
     dt='int16'
     num_bytes_per_entry=get_num_bytes_per_entry_from_dt(dt)
     dt_code=_dt_code_from_dt(dt)
@@ -617,7 +618,8 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
                     this_file = this_file[0]
                     buf.append(loadContinuous(this_file,start_record=this_rec, stop_record=this_rec+1,verbose=False)['data'])                    
                 buf=np.vstack(buf)
-                if do_median_ref & (buf.shape[0]>10):
+                print(do_median_ref,buf.shape[0]>10)
+                if (do_median_ref) & (buf.shape[0]>10):
                     buf=median_reference(buf,nshanks,dead_chans=dead_chans)
                 A=np.reshape(buf,buf.size,order='F').astype(dt)
                 A.tofile(f)
