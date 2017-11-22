@@ -535,7 +535,12 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         nrecords_continous=get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])
         print ('Found .continuous data with number of records = '+str(nrecords_continous))
         ndim=2
-        nephys_chans=64
+        if len(glob.glob(fname_kwd+'/1*H11.continuous')[0])>40:
+            print('Found 64 channels')
+            nephys_chans=64
+        else:
+            print('Found 32 channels')
+            nephys_chans=32
         duration =  loadContinuous(glob.glob(fname_kwd+'/1*H11.continuous')[0])['data'].shape[0]
     if dt_code is None:
         print ("Unexpected X type: {}".format(dt))
@@ -612,7 +617,7 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
                     this_file = this_file[0]
                     buf.append(loadContinuous(this_file,start_record=this_rec, stop_record=this_rec+1,verbose=False)['data'])                    
                 buf=np.vstack(buf)
-                if do_median_ref:
+                if do_median_ref & (buf.shape[0]>10):
                     buf=median_reference(buf,nshanks,dead_chans=dead_chans)
                 A=np.reshape(buf,buf.size,order='F').astype(dt)
                 A.tofile(f)
