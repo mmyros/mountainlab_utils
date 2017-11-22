@@ -764,7 +764,7 @@ def main(argv):#kwd_filename,mda_fname,channels=[],do_median_ref=False,startends
     kwd2mda(fname_kwd=argv[0],
             fname_mda=argv[1],
             channels=np.array(argv[2].split(',')).astype(int),
-            do_median_ref=argv[3],
+            do_median_ref=bool(int(argv[3])),
             startends=startends,
             sampling_rate=30000,nshanks=4 ,
             dead_chans=dead_chans)
