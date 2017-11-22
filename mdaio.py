@@ -7,7 +7,7 @@
 
 import numpy as np
 from pdb import *
-import struct,tqdm,copy,sys,h5py,glob
+import struct,tqdm,copy,sys,h5py,glob,os
 
 class MdaHeader:
     def __init__(self, dt0, dims0):
@@ -388,8 +388,7 @@ def loadContinuous(filepath, dtype=float, verbose=True,
             # little-endian 16-bit unsigned integer
             N = np.fromfile(f, np.dtype('<u2'), 1).item() 
             if N != header['blockLength']:
-                raise IOError('Found corrupted record in block ' + 
-                    str(recordNumber))
+                raise IOError('Found corrupted record in block ' )
             
             # Read and store the recording numbers
             # big-endian 16-bit unsigned integer
@@ -500,6 +499,7 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
     num_bytes_per_entry=get_num_bytes_per_entry_from_dt(dt)
     dt_code=_dt_code_from_dt(dt)
     is_kwd=fname_kwd[-3:]=='kwd'
+    
     if is_kwd:
         data=load_kwd_without_loading(fname_kwd)
         print('Found data with shape '+str(data['data'].shape))
@@ -508,7 +508,10 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         print('Found open ephys data with shape '+str(X.shape))    
         if len(channels)<1:
             channels = range(X.shape[1]) #TODO maybe as input for reshuffling
-        
+        try:
+            import mmy.ss #TODO maybe add limitations of when to start and stop
+        except Exception:
+            print('Starting at zero and ending at the end')
         if (startends is None):        startends=[0.]
         if len(startends)<1:           startends=[0.]
         if len(startends)<2:
@@ -523,11 +526,17 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         else: nephys_chans=X.shape[1]-3
         duration = X.shape[0] 
     else:
-        nrecords_continous=get_number_of_records(fname_kwd)
+        #        try:
+        #            glob.glob(fname_kwd+'/1*H11.continuous')[0]
+        #        except Exception:
+        ##            import os
+        ##            print(os.listdir(fname_kwd))
+        assert len(glob.glob(fname_kwd+'/1*H11.continuous'))>0,'Cant find continuous file in '+fname_kwd
+        nrecords_continous=get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])
         print ('Found .continuous data with number of records = '+str(nrecords_continous))
         ndim=2
         nephys_chans=64
-        duration =  loadContinuous(glob.glob(fname_kwd+'/1*H1.continuous')[0])['data'].shape[0]
+        duration =  loadContinuous(glob.glob(fname_kwd+'/1*H11.continuous')[0])['data'].shape[0]
     if dt_code is None:
         print ("Unexpected X type: {}".format(dt))
         return False
@@ -542,8 +551,8 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         
         print 'writing nephys_chans = '+str(nephys_chans)
         _write_int32(f,nephys_chans) #minus 3 bc accelerometer
-        print 'writing X.shape[0] = '+str(X.shape[0])
-        _write_int32(f,X.shape[0])
+        print 'writing duration = '+str(duration)
+        _write_int32(f,duration)
         #%% Write chunk by chunk 
         if is_kwd:
             # number of X points to write at a time, prevents excess memory usage
@@ -591,11 +600,15 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         else:
             #%%
             
-            for this_rec in tqdm.trange( get_number_of_records(glob.glob(fname_kwd+'/1*H1.continuous')[0])):
+            for this_rec in tqdm.trange( get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])):
                 buf=[]
-                for ich in arange(nephys_chans)+1:
-                    this_file=glob.glob(fname_kwd+'/1*H'+str(ich)+'.continuous')
-                    assert len(this_file)>0,'did not find channel '+ str(ich)+ ' in ' + fname_kwd
+                for ich in np.arange(nephys_chans)+1:
+                    if ich>9:
+                        chstr=str(ich)
+                    else:
+                        chstr='0'+str(ich)
+                    this_file=glob.glob(fname_kwd+'/1*H'+chstr+'.continuous')
+                    assert len(this_file)>0,'did not find channel '+ chstr + ' in ' + fname_kwd
                     this_file = this_file[0]
                     buf.append(loadContinuous(this_file,start_record=this_rec, stop_record=this_rec+1,verbose=False)['data'])                    
                 buf=np.vstack(buf)
