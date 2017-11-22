@@ -761,10 +761,11 @@ def main(argv):#kwd_filename,mda_fname,channels=[],do_median_ref=False,startends
     else:           dead_chans = []
     if len(argv)>5: startends  = np.array(argv[5].split(',')).astype(int);print ('start and end requested at '+str(startends))
     else:           startends  = []
+    do_median_ref=bool(int(argv[3]))
     kwd2mda(fname_kwd=argv[0],
             fname_mda=argv[1],
             channels=np.array(argv[2].split(',')).astype(int),
-            do_median_ref=bool(int(argv[3])),
+            do_median_ref=do_median_ref,
             startends=startends,
             sampling_rate=30000,nshanks=4 ,
             dead_chans=dead_chans)
