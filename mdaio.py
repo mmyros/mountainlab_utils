@@ -618,7 +618,6 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
                     this_file = this_file[0]
                     buf.append(loadContinuous(this_file,start_record=this_rec, stop_record=this_rec+1,verbose=False)['data'])                    
                 buf=np.vstack(buf)
-                print(do_median_ref,buf.shape[0]>10)
                 if (do_median_ref) & (buf.shape[0]>10):
                     buf=median_reference(buf,nshanks,dead_chans=dead_chans)
                 A=np.reshape(buf,buf.size,order='F').astype(dt)
