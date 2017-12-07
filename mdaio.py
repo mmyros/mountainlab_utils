@@ -536,7 +536,8 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         nrecords_continous=get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])
         print ('Found .continuous data with number of records = '+str(nrecords_continous))
         ndim=2
-        if len(glob.glob(fname_kwd+'/1*H11.continuous')[0])>40:
+	files=glob.glob(fname_kwd+'/*.continuous')
+        if len(files)>40:
             print('Found 64 channels')
             nephys_chans=64
         else:
@@ -606,7 +607,7 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
         else:
             #%%
             
-            for this_rec in tqdm.trange( get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])):
+            for this_rec in tqdm.trange(get_number_of_records(glob.glob(fname_kwd+'/1*H11.continuous')[0])):
                 buf=[]
                 for ich in np.arange(nephys_chans)+1:
                     if ich>9:
@@ -618,7 +619,7 @@ def kwd2mda(fname_kwd,fname_mda,channels=[],do_median_ref=False,startends=None,
                     this_file = this_file[0]
                     buf.append(loadContinuous(this_file,start_record=this_rec, stop_record=this_rec+1,verbose=False)['data'])                    
                 buf=np.vstack(buf)
-                if (do_median_ref) & (buf.shape[0]>10):
+                if (do_median_ref) & (buf.shape[1]>10):
                     buf=median_reference(buf,nshanks,dead_chans=dead_chans)
                 A=np.reshape(buf,buf.size,order='F').astype(dt)
                 A.tofile(f)
